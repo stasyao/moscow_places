@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.fields.json import JSONField
 
+from config.settings import MEDIA_ROOT
 
 class Place(models.Model):
     title = models.CharField(max_length=200, unique=True)
@@ -20,4 +21,10 @@ class Place(models.Model):
 
 
 class Image(models.Model):
-    pass
+    description = models.CharField(max_length=100)
+    priority = models.PositiveIntegerField(unique=True)
+    image = models.ImageField(upload_to=MEDIA_ROOT)
+    location = models.ForeignKey(to=Place, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f'{self.pk} {self.location}'
