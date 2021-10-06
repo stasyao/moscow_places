@@ -24,7 +24,7 @@ def show_main_page(request):
                }
             }
          ]
-      )
+      ) 
    places_geojson = {
       "type": "FeatureCollection",
       "features": features
