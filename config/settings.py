@@ -13,6 +13,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # third party apps
+    'adminsortable2',
+    'tinymce',
     # local apps
     'places.apps.PlacesConfig'
 ]

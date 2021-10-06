@@ -1,3 +1,5 @@
+from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
+
 from django import forms
 from django.contrib import admin
 from django.forms import Textarea
@@ -16,10 +18,10 @@ def picture_preview(obj):
 @admin.register(Image)
 class ImagesAdmin(admin.ModelAdmin):
     list_display = ('location', picture_preview, )
-    readonly_fields = [ picture_preview ]
+    readonly_fields = [ picture_preview, ]
 
 
-class ImageInline(admin.TabularInline):
+class ImageInline(SortableInlineAdminMixin, admin.StackedInline):
     model = Image
     fields = [ 'image', 'priority', picture_preview ]
     readonly_fields = [ picture_preview ]
@@ -48,7 +50,7 @@ class PlaceAdminForm(forms.ModelForm):
 
 
 @admin.register(Place)
-class PlacesAdmin(admin.ModelAdmin):
+class PlacesAdmin(admin.ModelAdmin, SortableAdminMixin):
     inlines = [ ImageInline, ]
     form = PlaceAdminForm
 
