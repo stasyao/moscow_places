@@ -1,10 +1,15 @@
 from pathlib import Path
 
+from environs import Env
+
+
+env = Env()
+env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-5a-84uq)(=au^(y_furfp$kx88q@^&@xpqho3^#ltdyx%d+)un'
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = env.str('SECRET_KEY', default='django-insecure-5a-84uq)(=au^(y_furfp$kx88q@^&@xpqho3^#ltdyx%d+)un')
+DEBUG = env.bool("DEBUG", default=True)
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1'])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -51,10 +56,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.dj_db_url('DB', default='sqlite:///db.sqlite3')
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -86,8 +88,17 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [ BASE_DIR / 'static', ]
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)
+SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=2592000)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True)
+SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=True)
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=True)
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=True)
