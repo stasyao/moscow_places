@@ -18,13 +18,13 @@ def picture_preview(obj):
 @admin.register(Image)
 class ImagesAdmin(admin.ModelAdmin):
     list_display = ('location', picture_preview, )
-    readonly_fields = [ picture_preview, ]
+    readonly_fields = [picture_preview, ]
 
 
 class ImageInline(SortableInlineAdminMixin, admin.StackedInline):
     model = Image
-    fields = [ 'image', 'priority', picture_preview ]
-    readonly_fields = [ picture_preview ]
+    fields = ['image', 'priority', picture_preview, ]
+    readonly_fields = [picture_preview, ]
     extra = 0
 
 
@@ -33,11 +33,12 @@ class PlaceAdminForm(forms.ModelForm):
     latitude = forms.CharField(max_length=50)
 
     def __init__(self, *args, **kwargs):
-        instance = kwargs['instance']
-        kwargs['initial'] = {
-            'longitude': instance.coordinates['lng'],
-            'latitude': instance.coordinates['lat']
-        }
+        instance = kwargs.get('instance')
+        if instance:
+            kwargs['initial'] = {
+                'longitude': instance.coordinates['lng'],
+                'latitude': instance.coordinates['lat']
+            }
         super().__init__(*args, **kwargs)
 
     class Meta:
@@ -51,8 +52,9 @@ class PlaceAdminForm(forms.ModelForm):
 
 @admin.register(Place)
 class PlacesAdmin(admin.ModelAdmin, SortableAdminMixin):
-    inlines = [ ImageInline, ]
+    inlines = [ImageInline, ]
     form = PlaceAdminForm
+    prepopulated_fields = {'slug': ('title',)}
 
     def save_model(self, request, obj, form, change):
         obj.coordinates = {

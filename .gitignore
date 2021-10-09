@@ -2,6 +2,8 @@ notes.md
 /draft
 /media
 script.sh
+setup.sh
+/staticfiles
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
