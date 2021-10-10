@@ -47,5 +47,5 @@ class Image(models.Model):
         verbose_name_plural = 'Изображения'
         ordering = ('priority', )
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f'{self.pk} {self.location}'
