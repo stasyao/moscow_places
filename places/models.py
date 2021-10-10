@@ -7,10 +7,10 @@ from tinymce.models import HTMLField
 
 
 class Place(models.Model):
-    title = models.CharField(max_length=200, unique=True)
+    title = models.CharField(max_length=200, unique=True, verbose_name='Название локации')
     slug = models.SlugField(null=True)
-    description_short = models.CharField(max_length=300, unique=True)
-    description_long = HTMLField()
+    description_short = models.CharField(max_length=300, unique=True, verbose_name='Короткое описание')
+    description_long = HTMLField(verbose_name='Подробное описание')
     coordinates = JSONField(default=dict)
 
     class Meta:
@@ -21,6 +21,8 @@ class Place(models.Model):
             )
         ]
         ordering = ('title',)
+        verbose_name = 'Локация'
+        verbose_name_plural = 'Локации'
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -38,10 +40,12 @@ class Image(models.Model):
     def get_upload_path(instance, filename):
         return Path(instance.location.slug) / filename
 
-    image = models.ImageField(upload_to=get_upload_path)
+    image = models.ImageField(upload_to=get_upload_path, verbose_name='Изображение')
 
     class Meta:
-        ordering = ('priority',)
+        verbose_name = 'Изображение'
+        verbose_name_plural = 'Изображения'
+        ordering = ('priority', )
 
     def __str__(self) -> str:
         return f'{self.pk} {self.location}'
