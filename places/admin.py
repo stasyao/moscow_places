@@ -4,7 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.forms import Textarea
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from .models import Image, Place
 
@@ -14,9 +14,10 @@ admin.site.unregister(Group)
 
 @admin.action(description='Превью')
 def picture_preview(obj):
-    return mark_safe(
-        f'<img src="{obj.image.url}"'
-        f'style="object-fit: cover; width:200px;height:150px;" />'
+    return format_html(
+        '<img src="{}"'
+        'style="object-fit: cover; width:200px;height:150px;" />',
+        obj.image.url
     )
 
 
@@ -39,22 +40,13 @@ class ImageInline(SortableInlineAdminMixin, admin.StackedInline):
 
 
 class PlaceAdminForm(forms.ModelForm):
-    longitude = forms.CharField(label='Долгота', max_length=50)
-    latitude = forms.CharField(label='Широта', max_length=50)
-
     def __init__(self, *args, **kwargs):
-        instance = kwargs.get('instance')
-        if instance:
-            kwargs['initial'] = {
-                'longitude': instance.coordinates['lng'],
-                'latitude': instance.coordinates['lat']
-            }
         super().__init__(*args, **kwargs)
         self.fields['slug'].disabled = True
 
     class Meta:
         model = Place
-        exclude = ['coordinates']
+        fields = '__all__'
         widgets = {
             'title': Textarea(attrs={'cols': 80, 'rows': 5}),
             'description_short': Textarea(attrs={'cols': 80, 'rows': 5}),
@@ -70,10 +62,3 @@ class PlacesAdmin(admin.ModelAdmin, SortableAdminMixin):
     list_display = ('title',)
     ordering = ('title',)
     search_fields = ('title',)
-
-    def save_model(self, request, obj, form, change):
-        obj.coordinates = {
-            'lng': form.cleaned_data['longitude'],
-            'lat': form.cleaned_data['latitude']
-        }
-        super().save_model(request, obj, form, change)
