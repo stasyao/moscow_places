@@ -38,7 +38,7 @@ def get_location_details(request, slug):
         'imgs': [image.image.url for image in location.image_set.all()],
         'description_short': location.description_short,
         'description_long': location.description_long,
-        'coordinates': location.coordinates
+        'coordinates': {'lng': location.longitude, 'lat': location.latitude}
     }
     return JsonResponse(
         location_details, json_dumps_params={

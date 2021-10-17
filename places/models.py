@@ -1,8 +1,6 @@
 from pathlib import Path
 
 from django.db import models
-from django.db.models.fields.json import JSONField
-from slugify import slugify
 from tinymce.models import HTMLField
 
 
@@ -11,7 +9,8 @@ class Place(models.Model):
     slug = models.SlugField(null=True)
     description_short = models.CharField(max_length=300, unique=True, verbose_name='Короткое описание')
     description_long = HTMLField(verbose_name='Подробное описание')
-    coordinates = JSONField(default=dict)
+    longitude = models.FloatField(verbose_name='Долгота')
+    latitude = models.FloatField(verbose_name='Широта')
 
     class Meta:
         constraints = [
