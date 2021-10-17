@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
-import requests
 
-from places.utils import json_url_to_place
+from places.utils.create_place_entry_from_json import json_url_to_place
 
 
 class Command(BaseCommand):
