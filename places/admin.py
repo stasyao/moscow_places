@@ -4,7 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.forms import Textarea
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from .models import Image, Place
 
@@ -14,9 +14,10 @@ admin.site.unregister(Group)
 
 @admin.action(description='Превью')
 def picture_preview(obj):
-    return mark_safe(
-        f'<img src="{obj.image.url}"'
-        f'style="object-fit: cover; width:200px;height:150px;" />'
+    return format_html(
+        '<img src="{}"'
+        'style="object-fit: cover; width:200px;height:150px;" />',
+        obj.image.url
     )
 
 
