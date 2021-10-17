@@ -4,12 +4,10 @@ from places.utils.create_place_entry_from_json import json_url_to_place
 
 
 class Command(BaseCommand):
-    help = ('Загрузить локации и фото к ним из json-файла. '
-            'Один аргумент: URL json файла')
+    help = 'Загрузить локации и фото к ним из json-файла'
 
     def handle(self, *args, **options):
-        path = options['path_to_json'][0]
-        json_url_to_place(path)
+        json_url_to_place(options['path_to_json_file'])
 
     def add_arguments(self, parser):
-        parser.add_argument(nargs=1, type=str, dest='path_to_json')
+        parser.add_argument('path_to_json_file')
