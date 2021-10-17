@@ -29,14 +29,15 @@ class Place(models.Model):
         return self.title
 
 
+def get_upload_path(instance, filename):
+    return Path(instance.location.slug) / filename
+
+
 class Image(models.Model):
     priority = models.PositiveIntegerField(default=0)
     location = models.ForeignKey(to=Place, on_delete=models.CASCADE)
-
-    def get_upload_path(instance, filename):
-        return Path(instance.location.slug) / filename
-
-    image = models.ImageField(upload_to=get_upload_path, verbose_name='Изображение')
+    image = models.ImageField(upload_to=get_upload_path, 
+                              verbose_name='Изображение')
 
     class Meta:
         verbose_name = 'Изображение'
