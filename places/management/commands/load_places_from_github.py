@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from places.utils.create_place_entry_from_json import github_jsons_to_place
+from places.utils import github_jsons_to_place
 
 
 class Command(BaseCommand):

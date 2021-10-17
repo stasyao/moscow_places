@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+import requests
 
 from places.utils import json_url_to_place
 

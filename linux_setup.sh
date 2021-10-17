@@ -15,9 +15,9 @@ python3 manage.py load_places_from_github \
                       where-to-go-places \
                                   places
 echo "======СОЗДАЁМ СУПЕРЮЗЕРА======"
-export DJANGO_SUPERUSER_USERNAME="super"
-export DJANGO_SUPERUSER_PASSWORD="super"
-export DJANGO_SUPERUSER_EMAIL="super@super.ru"
+export DJANGO_SUPERUSER_USERNAME="admin"
+export DJANGO_SUPERUSER_PASSWORD="admin"
+export DJANGO_SUPERUSER_EMAIL="admin@admin.ru"
 python3 manage.py createsuperuser --noinput
 echo "=====СОЗДАЁМ АДМИНИСТРАТОРА======"
 python3 manage.py create_places_admin admin admin
