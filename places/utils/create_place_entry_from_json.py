@@ -30,7 +30,7 @@ def json_to_place(json_data):
             img_name = os.path.basename(img_url)
             response = requests.get(img_url)
             image_file = ContentFile(response.content)
-            new_image_entry = Image(location=new_place_entry)
+            new_image_entry = Image(place=new_place_entry)
             img = new_image_entry.image
             img.save(img_name, image_file, save=False)
             new_image_entry.save()

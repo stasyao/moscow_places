@@ -6,12 +6,12 @@ from places.models import Place
 
 
 def show_main_page(request):
-    locations = Place.objects.all()
+    places = Place.objects.all()
     places_geojson = {
         "type": "FeatureCollection",
         "features": []
     }
-    for place in locations:
+    for place in places:
         places_geojson["features"].append(
             {
                 "type": "Feature",
@@ -22,7 +22,7 @@ def show_main_page(request):
                 "properties": {
                     "title": place.title,
                     "placeId": place.pk,
-                    "detailsUrl": reverse('location', args=(place.slug,))
+                    "detailsUrl": reverse('place', args=(place.slug,))
                 }
             }
         )
@@ -30,18 +30,18 @@ def show_main_page(request):
     return render(request, template_name='index.html', context=context)
 
 
-def get_location_details(request, slug):
-    location = get_object_or_404(Place, slug=slug)
+def get_place_details(request, slug):
+    place = get_object_or_404(Place, slug=slug)
     print(location.latitude)
-    location_details = {
-        'title': location.title,
-        'imgs': [image.image.url for image in location.image_set.all()],
-        'description_short': location.description_short,
-        'description_long': location.description_long,
-        'coordinates': {'lng': location.longitude, 'lat': location.latitude}
+    place_details = {
+        'title': place.title,
+        'imgs': [image.image.url for image in place.image_set.all()],
+        'description_short': place.description_short,
+        'description_long': place.description_long,
+        'coordinates': {'lng': place.longitude, 'lat': place.latitude}
     }
     return JsonResponse(
-        location_details, json_dumps_params={
+        place_details, json_dumps_params={
             'ensure_ascii': False,
             'indent': 2
         }

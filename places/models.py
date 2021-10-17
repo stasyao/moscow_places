@@ -30,12 +30,12 @@ class Place(models.Model):
 
 
 def get_upload_path(instance, filename):
-    return Path(instance.location.slug) / filename
+    return Path(instance.place.slug) / filename
 
 
 class Image(models.Model):
     priority = models.PositiveIntegerField(default=0)
-    location = models.ForeignKey(to=Place, on_delete=models.CASCADE)
+    place = models.ForeignKey(to=Place, on_delete=models.CASCADE)
     image = models.ImageField(upload_to=get_upload_path,
                               blank=True,
                               verbose_name='Изображение')
@@ -46,4 +46,4 @@ class Image(models.Model):
         ordering = ('priority', )
 
     def __str__(self):
-        return f'{self.pk} {self.location}'
+        return f'{self.pk} {self.place}'

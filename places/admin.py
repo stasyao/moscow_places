@@ -23,7 +23,7 @@ def picture_preview(obj):
 
 @admin.register(Image)
 class ImagesAdmin(admin.ModelAdmin):
-    list_display = ('location', picture_preview, )
+    list_display = ('place', picture_preview, )
     readonly_fields = [picture_preview, ]
 
     def get_model_perms(self, request):
