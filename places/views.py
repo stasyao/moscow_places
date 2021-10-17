@@ -32,7 +32,6 @@ def show_main_page(request):
 
 def get_place_details(request, slug):
     place = get_object_or_404(Place, slug=slug)
-    print(location.latitude)
     place_details = {
         'title': place.title,
         'imgs': [image.image.url for image in place.image_set.all()],
