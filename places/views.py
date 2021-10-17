@@ -40,4 +40,9 @@ def get_location_details(request, slug):
         'description_long': location.description_long,
         'coordinates': location.coordinates
     }
-    return JsonResponse(location_details)
+    return JsonResponse(
+        location_details, json_dumps_params={
+            'ensure_ascii': False,
+            'indent': 2
+        }
+    )
