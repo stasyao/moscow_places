@@ -35,7 +35,9 @@ def get_upload_path(instance, filename):
 
 class Image(models.Model):
     priority = models.PositiveIntegerField(default=0)
-    place = models.ForeignKey(to=Place, on_delete=models.CASCADE)
+    place = models.ForeignKey(to=Place,
+                              on_delete=models.CASCADE,
+                              related_name='images')
     image = models.ImageField(upload_to=get_upload_path,
                               blank=True,
                               verbose_name='Изображение')
