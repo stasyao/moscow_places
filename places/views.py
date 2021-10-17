@@ -7,30 +7,25 @@ from places.models import Place
 
 def show_main_page(request):
     locations = Place.objects.all()
-    features = []
-    for loc in locations:
-        features.extend(
-            [
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [
-                            float(v) for v in loc.coordinates.values()
-                        ]
-                    },
-                    "properties": {
-                        "title": loc.title,
-                        "placeId": loc.id,
-                        "detailsUrl": reverse('location', args=(loc.slug,))
-                    }
-                }
-            ]
-        )
     places_geojson = {
         "type": "FeatureCollection",
-        "features": features
+        "features": []
     }
+    for place in locations:
+        places_geojson["features"].append(
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [place.longitude, place.latitude]
+                },
+                "properties": {
+                    "title": place.title,
+                    "placeId": place.pk,
+                    "detailsUrl": reverse('location', args=(place.slug,))
+                }
+            }
+        )
     context = {'places_geojson': places_geojson}
     return render(request, template_name='index.html', context=context)
 
