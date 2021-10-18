@@ -13,16 +13,12 @@ from places.models import Image, Place
 
 @timer
 def json_to_place(json_data):
-    data_for_place_model = {
-        'title': json_data['title'],
-        'slug': slugify(json_data['title']),
-        'description_short': json_data['description_short'],
-        'description_long': json_data['description_long'],
-        'longitude': json_data['coordinates']['lng'],
-        'latitude': json_data['coordinates']['lat']
-    }
     new_place_entry, created = Place.objects.get_or_create(
-        **data_for_place_model
+        **{'title': json_data['title'], 'slug': slugify(json_data['title']),
+         'description_short': json_data['description_short'],
+         'description_long': json_data['description_long'],
+         'longitude': json_data['coordinates']['lng'],
+         'latitude': json_data['coordinates']['lat']}
     )
     if not created:
         print(f'Локация {new_place_entry.title} уже есть в базе')
@@ -37,7 +33,7 @@ def json_to_place(json_data):
         new_image_entry.save()
     print(f'Создана запись о локации {new_place_entry.title}')
     return True
-    
+
 
 @timer
 def json_url_to_place(url):
