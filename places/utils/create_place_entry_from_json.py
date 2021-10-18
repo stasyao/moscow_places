@@ -13,18 +13,18 @@ from places.models import Image, Place
 
 
 @timer
-def json_to_place(json_data):
+def create_place_record(payload: dict):
     new_place_entry, created = Place.objects.get_or_create(
-        **{'title': json_data['title'], 'slug': slugify(json_data['title']),
-           'description_short': json_data['description_short'],
-           'description_long': json_data['description_long'],
-           'longitude': json_data['coordinates']['lng'],
-           'latitude': json_data['coordinates']['lat']}
+        **{'title': payload['title'], 'slug': slugify(payload['title']),
+           'description_short': payload['description_short'],
+           'description_long': payload['description_long'],
+           'longitude': payload['coordinates']['lng'],
+           'latitude': payload['coordinates']['lat']}
     )
     if not created:
         print(f'Локация {new_place_entry.title} уже есть в базе')
         return False
-    for img_url in json_data['imgs']:
+    for img_url in payload['imgs']:
         img_name = os.path.basename(img_url)
         try:
             response = requests.get(img_url)
@@ -41,21 +41,21 @@ def json_to_place(json_data):
 
 
 @timer
-def json_url_to_place(url):
+def create_place_record_from_json(url):
     validator = URLValidator()
     try:
         validator(url)
     except ValidationError:
         print('Переданный путь не похож на URL')
     try:
-        json_to_place(decode_json_response(requests.get(url)))
+        create_place_record(decode_json_response(requests.get(url)))
         print('\nСоздана запись о локации')
     except RequestException as exc:
         print(f'Запрос к {url} не прошёл - {exc}')
 
 
 @timer
-def github_jsons_to_place(url):
+def create_place_record_from_github_jsons(url):
     validator = URLValidator()
     try:
         validator(url)
@@ -63,16 +63,15 @@ def github_jsons_to_place(url):
         print('Переданный путь не похож на URL')
     try:
         decoded_response = decode_json_response(requests.get(url))
-        place_data_urls = [
-            place_file['download_url'] for place_file in decoded_response
+        place_json_urls = [
+            place['download_url'] for place in decoded_response
         ]
-        place_data_json = []
-        for url in place_data_urls:
-            place_data_json.append(
-                decode_json_response(requests.get(url))
-            )
+        place_decoded: list[dict] = [
+            decode_json_response(requests.get(url)) for url in
+            place_json_urls
+        ]
         num_created = sum(
-            json_to_place(json_data) for json_data in place_data_json
+            create_place_record(json_data) for json_data in place_decoded
         )
         print(f'\nВсего записей о локациях создано: {num_created} ')
     except RequestException as exc:

@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
 
-from places.utils.create_place_entry_from_json import github_jsons_to_place
+from places.utils.create_place_entry_from_json import(
+    create_place_record_from_github_jsons
+)
 
 
 class Command(BaseCommand):
@@ -9,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         owner, repo, folder = options["owner"], options["repo"], options["folder"]
         url = f'https://api.github.com/repos/{owner}/{repo}/contents/{folder}'
-        github_jsons_to_place(url)
+        create_place_record_from_github_jsons(url)
 
     def add_arguments(self, parser):
         parser.add_argument('owner', metavar='владелец_репозитория')
