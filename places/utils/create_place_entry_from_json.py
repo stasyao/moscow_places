@@ -29,11 +29,8 @@ def create_place_record(payload: dict):
         try:
             response = requests.get(img_url)
             response.raise_for_status()
-            image_file = ContentFile(response.content)
-            new_image_entry = Image(place=new_place_entry)
-            img = new_image_entry.image
-            img.save(img_name, image_file, save=False)
-            new_image_entry.save()
+            image_file = ContentFile(response.content, name=img_name)
+            Image.objects.create(place=new_place_entry, image=image_file)
         except RequestException as exc:
             print(f'Запрос к {img_url} не прошёл - {exc}')
     print(f'Создана запись о локации {new_place_entry.title}')
