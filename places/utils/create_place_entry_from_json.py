@@ -24,20 +24,20 @@ def json_to_place(json_data):
     new_place_entry, created = Place.objects.get_or_create(
         **data_for_place_model
     )
-    if created:
-        print(f'Создана запись о локации {new_place_entry.title}')
-        for img_url in json_data['imgs']:
-            img_name = os.path.basename(img_url)
-            response = requests.get(img_url)
-            image_file = ContentFile(response.content)
-            new_image_entry = Image(place=new_place_entry)
-            img = new_image_entry.image
-            img.save(img_name, image_file, save=False)
-            new_image_entry.save()
-        return True
-    print(f'Локация {new_place_entry.title} уже есть в базе')
-    return False
-
+    if not created:
+        print(f'Локация {new_place_entry.title} уже есть в базе')
+        return False
+    for img_url in json_data['imgs']:
+        img_name = os.path.basename(img_url)
+        response = requests.get(img_url)
+        image_file = ContentFile(response.content)
+        new_image_entry = Image(place=new_place_entry)
+        img = new_image_entry.image
+        img.save(img_name, image_file, save=False)
+        new_image_entry.save()
+    print(f'Создана запись о локации {new_place_entry.title}')
+    return True
+    
 
 @timer
 def json_url_to_place(url):
@@ -71,10 +71,9 @@ def github_jsons_to_place(url):
                 response = requests.get(url)
                 response.raise_for_status()
                 place_data_json.append(response.json())
-            num_created = 0
-            for json_data in place_data_json:
-                if json_to_place(json_data):
-                    num_created += 1
+            num_created = sum(
+                json_to_place(json_data) for json_data in place_data_json
+            )
             print(f'\nВсего записей о локациях создано: {num_created} ')
         except RequestException as exc:
             print(f'Запрос к {url} не прошёл - {exc}')
