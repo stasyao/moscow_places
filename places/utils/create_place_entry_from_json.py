@@ -7,6 +7,7 @@ import requests
 from requests.exceptions import RequestException
 from slugify import slugify
 
+from .response_handler import decode_json_response
 from .timer import timer
 from places.models import Image, Place
 
@@ -15,17 +16,17 @@ from places.models import Image, Place
 def json_to_place(json_data):
     new_place_entry, created = Place.objects.get_or_create(
         **{'title': json_data['title'], 'slug': slugify(json_data['title']),
-         'description_short': json_data['description_short'],
-         'description_long': json_data['description_long'],
-         'longitude': json_data['coordinates']['lng'],
-         'latitude': json_data['coordinates']['lat']}
+           'description_short': json_data['description_short'],
+           'description_long': json_data['description_long'],
+           'longitude': json_data['coordinates']['lng'],
+           'latitude': json_data['coordinates']['lat']}
     )
     if not created:
         print(f'Локация {new_place_entry.title} уже есть в базе')
         return False
     for img_url in json_data['imgs']:
         img_name = os.path.basename(img_url)
-        try: 
+        try:
             response = requests.get(img_url)
             response.raise_for_status()
             image_file = ContentFile(response.content)
@@ -45,9 +46,7 @@ def json_url_to_place(url):
     try:
         validator(url)
         try:
-            res = requests.get(url)
-            res.raise_for_status()
-            json_to_place(res.json())
+            json_to_place(decode_json_response(requests.get(url)))
             print('\nСоздана запись о локации')
         except RequestException as exc:
             print(f'Запрос к {url} не прошёл - {exc}')
@@ -61,16 +60,15 @@ def github_jsons_to_place(url):
     try:
         validator(url)
         try:
-            response = requests.get(url)
-            response.raise_for_status()
+            decoded_response = decode_json_response(requests.get(url))
             place_data_urls = [
-                place_file['download_url'] for place_file in response.json()
+                place_file['download_url'] for place_file in decoded_response
             ]
             place_data_json = []
             for url in place_data_urls:
-                response = requests.get(url)
-                response.raise_for_status()
-                place_data_json.append(response.json())
+                place_data_json.append(
+                    decode_json_response(requests.get(url))
+                )
             num_created = sum(
                 json_to_place(json_data) for json_data in place_data_json
             )
