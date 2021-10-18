@@ -25,12 +25,16 @@ def json_to_place(json_data):
         return False
     for img_url in json_data['imgs']:
         img_name = os.path.basename(img_url)
-        response = requests.get(img_url)
-        image_file = ContentFile(response.content)
-        new_image_entry = Image(place=new_place_entry)
-        img = new_image_entry.image
-        img.save(img_name, image_file, save=False)
-        new_image_entry.save()
+        try: 
+            response = requests.get(img_url)
+            response.raise_for_status()
+            image_file = ContentFile(response.content)
+            new_image_entry = Image(place=new_place_entry)
+            img = new_image_entry.image
+            img.save(img_name, image_file, save=False)
+            new_image_entry.save()
+        except RequestException as exc:
+            print(f'Запрос к {img_url} не прошёл - {exc}')
     print(f'Создана запись о локации {new_place_entry.title}')
     return True
 
@@ -45,7 +49,7 @@ def json_url_to_place(url):
             res.raise_for_status()
             json_to_place(res.json())
             print('\nСоздана запись о локации')
-        except Exception as exc:
+        except RequestException as exc:
             print(f'Запрос к {url} не прошёл - {exc}')
     except ValidationError:
         print('Переданный путь не похож на URL')
