@@ -45,13 +45,13 @@ def json_url_to_place(url):
     validator = URLValidator()
     try:
         validator(url)
-        try:
-            json_to_place(decode_json_response(requests.get(url)))
-            print('\nСоздана запись о локации')
-        except RequestException as exc:
-            print(f'Запрос к {url} не прошёл - {exc}')
     except ValidationError:
         print('Переданный путь не похож на URL')
+    try:
+        json_to_place(decode_json_response(requests.get(url)))
+        print('\nСоздана запись о локации')
+    except RequestException as exc:
+        print(f'Запрос к {url} не прошёл - {exc}')
 
 
 @timer
@@ -59,21 +59,21 @@ def github_jsons_to_place(url):
     validator = URLValidator()
     try:
         validator(url)
-        try:
-            decoded_response = decode_json_response(requests.get(url))
-            place_data_urls = [
-                place_file['download_url'] for place_file in decoded_response
-            ]
-            place_data_json = []
-            for url in place_data_urls:
-                place_data_json.append(
-                    decode_json_response(requests.get(url))
-                )
-            num_created = sum(
-                json_to_place(json_data) for json_data in place_data_json
-            )
-            print(f'\nВсего записей о локациях создано: {num_created} ')
-        except RequestException as exc:
-            print(f'Запрос к {url} не прошёл - {exc}')
     except ValidationError:
         print('Переданный путь не похож на URL')
+    try:
+        decoded_response = decode_json_response(requests.get(url))
+        place_data_urls = [
+            place_file['download_url'] for place_file in decoded_response
+        ]
+        place_data_json = []
+        for url in place_data_urls:
+            place_data_json.append(
+                decode_json_response(requests.get(url))
+            )
+        num_created = sum(
+            json_to_place(json_data) for json_data in place_data_json
+        )
+        print(f'\nВсего записей о локациях создано: {num_created} ')
+    except RequestException as exc:
+        print(f'Запрос к {url} не прошёл - {exc}')
