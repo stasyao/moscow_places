@@ -4,6 +4,7 @@ notes.md
 script.sh
 setup.sh
 /staticfiles
+sandbox.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
