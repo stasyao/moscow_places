@@ -19,7 +19,8 @@ def create_place_record(payload: dict):
            'description_short': payload['description_short'],
            'description_long': payload['description_long'],
            'longitude': payload['coordinates']['lng'],
-           'latitude': payload['coordinates']['lat']}
+           'latitude': payload['coordinates']['lat'],
+           'pub_status': 'P'}
     )
     if not created:
         print(f'Локация {new_place_entry.title} уже есть в базе')
