@@ -5,26 +5,30 @@ from tinymce.models import HTMLField
 
 
 class Place(models.Model):
+
+    class PublicationStatus(models.TextChoices):
+        DRAFT = 'D', 'Черновик'
+        PUBLISHED = 'P', 'Опубликован'
+
     title = models.CharField(max_length=200, verbose_name='Название локации')
     slug = models.SlugField(unique=True)
     description_short = models.TextField(blank=True,
                                          verbose_name='Короткое описание')
     description_long = HTMLField(blank=True,
                                  verbose_name='Подробное описание')
-    longitude = models.FloatField(verbose_name='Долгота')
-    latitude = models.FloatField(verbose_name='Широта')
+    longitude = models.FloatField(verbose_name='Долгота',
+                                  blank=True,
+                                  null=True)
+    latitude = models.FloatField(verbose_name='Широта',
+                                 null=True,
+                                 blank=True)
+    pub_status = models.CharField(db_index=True,
+                                  max_length=1,
+                                  choices=PublicationStatus.choices,
+                                  default=PublicationStatus.DRAFT,
+                                  verbose_name='Статус публикации')
 
     class Meta:
-        # У объектов может быть одинаковый title, например, два кафе "Мечта"
-        # У объектов может быть одинаковые координаты (находятся в одном здании)
-        # У объектов могут первое время отсутствовать описания
-        # => сочетание title и координат должно быть уникальным 
-        constraints = [
-            models.UniqueConstraint(
-                fields=['title', 'longitude', 'latitude'],
-                name='unique_places'
-            )
-        ]
         ordering = ('title',)
         verbose_name = 'Локация'
         verbose_name_plural = 'Локации'
