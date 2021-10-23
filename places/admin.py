@@ -2,14 +2,11 @@ from adminsortable2.admin import SortableAdminMixin, SortableInlineAdminMixin
 
 from django import forms
 from django.contrib import admin
-from django.contrib.auth.models import Group
 from django.forms import Textarea
 from django.utils.html import format_html
 
 from .models import Image, Place
 
-
-admin.site.unregister(Group)
 
 
 @admin.action(description='Превью')
@@ -23,6 +20,7 @@ def picture_preview(obj):
 
 @admin.register(Image)
 class ImagesAdmin(admin.ModelAdmin):
+    raw_id_fields = ('place',)
     list_display = ('place', picture_preview, )
     readonly_fields = [picture_preview, ]
 
@@ -42,15 +40,12 @@ class ImageInline(SortableInlineAdminMixin, admin.StackedInline):
 class PlaceAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['slug'].disabled = True
 
     class Meta:
         model = Place
         fields = '__all__'
         widgets = {
-            'title': Textarea(attrs={'cols': 80, 'rows': 5}),
-            'description_short': Textarea(attrs={'cols': 80, 'rows': 5}),
-            'slug': forms.HiddenInput()
+            'description_short': Textarea(attrs={'cols': 80, 'rows': 5})
         }
 
 
