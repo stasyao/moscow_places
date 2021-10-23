@@ -5,19 +5,23 @@ from tinymce.models import HTMLField
 
 
 class Place(models.Model):
-    title = models.CharField(max_length=200, unique=True,
-                             verbose_name='Название локации')
-    slug = models.SlugField()
+    title = models.CharField(max_length=200, verbose_name='Название локации')
+    slug = models.SlugField(unique=True)
     description_short = models.TextField(blank=True,
                                          verbose_name='Короткое описание')
-    description_long = HTMLField(verbose_name='Подробное описание')
+    description_long = HTMLField(blank=True,
+                                 verbose_name='Подробное описание')
     longitude = models.FloatField(verbose_name='Долгота')
     latitude = models.FloatField(verbose_name='Широта')
 
     class Meta:
+        # У объектов может быть одинаковый title, например, два кафе "Мечта"
+        # У объектов может быть одинаковые координаты (находятся в одном здании)
+        # У объектов могут первое время отсутствовать описания
+        # => сочетание title и координат должно быть уникальным 
         constraints = [
             models.UniqueConstraint(
-                fields=['title', 'description_short', 'description_long'],
+                fields=['title', 'longitude', 'latitude'],
                 name='unique_places'
             )
         ]
@@ -34,12 +38,11 @@ def get_upload_path(instance, filename):
 
 
 class Image(models.Model):
-    priority = models.PositiveIntegerField(default=0)
+    priority = models.PositiveIntegerField(db_index=True, blank=True, default=0)
     place = models.ForeignKey(to=Place,
                               on_delete=models.CASCADE,
                               related_name='images')
     image = models.ImageField(upload_to=get_upload_path,
-                              blank=True,
                               verbose_name='Изображение')
 
     class Meta:
