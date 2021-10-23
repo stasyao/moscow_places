@@ -16,11 +16,11 @@ def json_script_with_non_ascii(value, element_id):
         ord('<'): '\\u003C',
         ord('&'): '\\u0026',
     }
-    json_str = json.dumps(
+    value_json = json.dumps(
         value,
         cls=DjangoJSONEncoder, ensure_ascii=False
     ).translate(_json_script_escapes)
     return format_html(
         '<script id="{}" type="application/json">{}</script>',
-        element_id, mark_safe(json_str)
+        element_id, mark_safe(value_json)
     )
