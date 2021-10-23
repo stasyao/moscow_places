@@ -13,7 +13,7 @@ from .models import Image, Place
 def picture_preview(obj):
     return format_html(
         '<img src="{}"'
-        'style="object-fit: cover; width:200px;height:150px;" />',
+        'style="object-fit: cover; width:200px; height:150px;" />',
         obj.image.url
     )
 
@@ -24,10 +24,14 @@ class ImagesAdmin(admin.ModelAdmin):
     list_display = ('place', picture_preview, )
     readonly_fields = [picture_preview, ]
 
-    def get_model_perms(self, request):
-        if not request.user.is_superuser:
-            return {}
-        return super().get_model_perms(request)
+    def has_module_permission(self, request):
+        """
+        Раздел "Изображения" на стартовой странице админ-панели
+        скрываем от всех, кто входит в группу "контент-менеджеры"
+        """
+        if request.user.groups.filter(name='content_managers').exists():
+            return False
+        return super().has_module_permission(request)
 
 
 class ImageInline(SortableInlineAdminMixin, admin.StackedInline):
