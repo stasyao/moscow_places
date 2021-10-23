@@ -6,7 +6,7 @@ from places.models import Place
 
 
 def show_main_page(request):
-    places = Place.objects.all()
+    places = Place.objects.filter(pub_status='P')
     places_geojson = {
         "type": "FeatureCollection",
         "features": []
